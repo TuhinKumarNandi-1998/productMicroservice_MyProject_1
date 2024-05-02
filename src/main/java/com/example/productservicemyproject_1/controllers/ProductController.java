@@ -1,6 +1,7 @@
 package com.example.productservicemyproject_1.controllers;
 
 import com.example.productservicemyproject_1.Exceptions.ProductNotFoundException;
+import com.example.productservicemyproject_1.commons.AuthenticationCommons;
 import com.example.productservicemyproject_1.models.Product;
 import com.example.productservicemyproject_1.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,20 +10,25 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/products")
 public class ProductController {
     private ProductService productService;
+    private AuthenticationCommons authenticationCommons;
 
     @Autowired
-    public ProductController(@Qualifier("SelfProductService") ProductService productService) {
+    public ProductController(@Qualifier("SelfProductService") ProductService productService,
+                             AuthenticationCommons authenticationCommons) {
         this.productService = productService;
+        this.authenticationCommons = authenticationCommons;
     }
     @GetMapping()
-    public ResponseEntity<List<Product>> getAllProducts() {
+    public ResponseEntity<List<Product>> getAllProducts(@RequestHeader String tokenValues) {
+        if(!authenticationCommons.validateToken(tokenValues)) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
         List<Product> products = productService.getAllProducts();
 
         ResponseEntity<List<Product>> response = new ResponseEntity<>(products, HttpStatus.FOUND);
