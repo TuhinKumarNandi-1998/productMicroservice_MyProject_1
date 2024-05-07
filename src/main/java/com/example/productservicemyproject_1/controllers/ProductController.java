@@ -25,10 +25,12 @@ public class ProductController {
         this.authenticationCommons = authenticationCommons;
     }
     @GetMapping()
-    public ResponseEntity<List<Product>> getAllProducts(@RequestHeader String tokenValues) {
-        if(!authenticationCommons.validateToken(tokenValues)) {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
+    public ResponseEntity<List<Product>> getAllProducts() {
+        //Now I don't need to manage the authentication here in controller of Product Service
+        //It is now been managed by the Authentication server (i.e. my User Service Microservice)
+//        if(!authenticationCommons.validateToken(tokenValues)) {
+//            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+//        }
         List<Product> products = productService.getAllProducts();
 
         ResponseEntity<List<Product>> response = new ResponseEntity<>(products, HttpStatus.FOUND);
